@@ -1,0 +1,30 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# Data and pictures of people: never publish these
+dataset/
+dataset_test/
+FER2013/
+screenshots/
+stress_results/
+logs/
+converted_tflite/
+
+# Local runtime files
+runs/
+*.avi
+*.mp4
+*.db
+*.db-journal
+zone.json
+yolov8n.pt
+*.onnx
+
+# Editor / OS
+.vscode/
+.DS_Store
+Thumbs.db

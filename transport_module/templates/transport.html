@@ -1,0 +1,21 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Transport{% endblock %}
+{% block head %}<link rel="stylesheet" href="/static/leaflet/leaflet.css">{% endblock %}
+{% block dcontent %}
+<div class="pagehead">
+  <h1>Employee transport</h1>
+  <p>Live position of each bus against its planned route and pickup stops.</p>
+</div>
+<div class="tgrid">
+  <div class="stack">
+    <section class="panel"><h2>Buses</h2><div id="vehicles"></div></section>
+    <section class="panel"><h2 id="stopsTitle">Pickup and drop stops</h2><div id="stops"></div></section>
+    <section class="panel"><h2>Transport alerts</h2><div id="alerts"></div></section>
+  </div>
+  <div>
+    <p class="mapnote"><label><input type="checkbox" id="follow"> Follow the selected bus</label><span>Click the map to read coordinates for <code>routes.json</code></span></p>
+    <div id="map"></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/leaflet/leaflet.js"></script><script src="/static/page-transport.js"></script>{% endblock %}

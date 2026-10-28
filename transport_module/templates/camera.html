@@ -1,0 +1,52 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Live camera{% endblock %}
+{% block dcontent %}
+<div class="pagehead">
+  <h1>Live camera</h1>
+  <p>Start the PPE and stress detection from here. The picture shows each person's PPE status and stress label, and every alert is saved to the Workplace page.</p>
+</div>
+<div class="camgrid">
+  <div class="stack">
+    <section class="panel">
+      <div class="camview" id="camview">
+        <img id="feed" alt="Live camera with PPE and stress detection" hidden>
+        <div class="placeholder" id="placeholder">The camera is off. Press Start detection.</div>
+      </div>
+      <div class="readout" id="readout"></div>
+    </section>
+  </div>
+  <div class="stack">
+    <section class="panel">
+      <h2>Controls</h2>
+      <label class="field">Camera or video
+        <select id="source">
+          <option value="0">Webcam 0 (built-in)</option>
+          <option value="1">Webcam 1 (external)</option>
+          <option value="file">Video file...</option>
+        </select>
+      </label>
+      <label class="field" id="fileField" hidden>Video file path
+        <input type="text" id="file" placeholder="C:\videos\site.mp4 or site.mp4 inside the PPE folder">
+      </label>
+      <label class="check"><input type="checkbox" id="stress" checked> Include stress detection</label>
+      <div class="btns">
+        <button class="btn primary" id="start">Start detection</button>
+        <button class="btn" id="stop" disabled>Stop</button>
+        <button class="btn" id="shot" disabled>Save screenshot</button>
+      </div>
+      <p class="msg" id="msg" role="status"></p>
+      <details class="how"><summary>Setup needed once</summary>
+        <p>Start this server with the path to your PPE folder so it can run the detection:</p>
+        <p><code>python app.py --ppe-dir "C:\Users\karth\OneDrive\Desktop\ppe_project"</code></p>
+        <p>That folder must hold <code>best.pt</code>, and for stress also <code>model_unquant.tflite</code> and <code>labels.txt</code>. The danger zone is used automatically if <code>zone.json</code> exists.</p>
+      </details>
+    </section>
+    <section class="panel">
+      <h2>Latest workplace alerts</h2>
+      <div id="alerts"></div>
+      <a class="more" href="/dashboard/workplace">See all workplace alerts</a>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/page-camera.js"></script>{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Workplace{% endblock %}
+{% block dcontent %}
+<div class="pagehead">
+  <h1>Workplace safety</h1>
+  <p>The camera checks each person's PPE and position, and estimates stress from the face. Every alert is saved here with its picture.</p>
+</div>
+<div class="now">
+  <section class="panel">
+    <h2>Right now</h2>
+    <div class="big" id="cur">-</div>
+    <p class="sub" id="curNote" style="margin:6px 0 0"></p>
+    <div class="counts" id="counts"></div>
+  </section>
+  <section class="panel">
+    <h2>Alerts per hour</h2>
+    <div id="chart"></div>
+  </section>
+</div>
+<div class="chips" role="group" aria-label="Filter alerts">
+  <button class="chip" data-f="ALL" aria-pressed="true">All</button>
+  <button class="chip" data-f="HIGH_RISK" aria-pressed="false">High risk</button>
+  <button class="chip" data-f="VIOLATION" aria-pressed="false">PPE violation</button>
+  <button class="chip" data-f="CAUTION" aria-pressed="false">Caution</button>
+  <button class="chip" data-f="STRESS" aria-pressed="false">Stress high</button>
+  <a class="spacer" href="/export/events.csv">Download events (CSV)</a>
+</div>
+<div class="cards" id="cards"></div>
+{% endblock %}
+{% block scripts %}<script>window.PPE_QUERY = '?limit=200';</script><script src="/static/page-workplace.js"></script>{% endblock %}

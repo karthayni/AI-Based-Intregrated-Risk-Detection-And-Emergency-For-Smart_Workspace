@@ -1,0 +1,59 @@
+{
+  "_help": "Edit this file to describe your vehicles. Coordinates are [latitude, longitude]. 'points' is the planned route (more points = follows the road better). 'stops' are pickup / drop places in the order they should be visited; the LAST stop is the destination. Tip: click on the dashboard map to see the coordinates of any place. The sample routes below are DEMO routes drawn between approximate points; they are not snapped to real roads.",
+  "settings": {
+    "deviation_m": 150,
+    "deviation_pings": 3,
+    "stop_seconds": 120,
+    "still_radius_m": 25,
+    "stop_radius_m": 60,
+    "signal_timeout_s": 30,
+    "max_speed_ms": 60
+  },
+  "vehicles": [
+    {
+      "id": "BUS-01",
+      "name": "Employee Bus 1",
+      "driver": "Ravi Kumar",
+      "route": {
+        "name": "Route A: South to Office",
+        "points": [[12.9100, 77.5850], [12.9200, 77.5880], [12.9300, 77.5890], [12.9400, 77.5920], [12.9500, 77.5930], [12.9600, 77.5945], [12.9716, 77.5946]],
+        "stops": [
+          {"name": "Pickup 1: South Gate", "lat": 12.9200, "lon": 77.5880, "kind": "pickup"},
+          {"name": "Pickup 2: Market Circle", "lat": 12.9400, "lon": 77.5920, "kind": "pickup"},
+          {"name": "Pickup 3: Park Road", "lat": 12.9600, "lon": 77.5945, "kind": "pickup"},
+          {"name": "Office Campus", "lat": 12.9716, "lon": 77.5946, "kind": "drop"}
+        ]
+      }
+    },
+    {
+      "id": "BUS-02",
+      "name": "Employee Bus 2",
+      "driver": "Suresh Babu",
+      "route": {
+        "name": "Route B: East to Office",
+        "points": [[12.9700, 77.7000], [12.9680, 77.6800], [12.9720, 77.6600], [12.9750, 77.6400], [12.9730, 77.6200], [12.9700, 77.6050], [12.9716, 77.5946]],
+        "stops": [
+          {"name": "Pickup 1: East Junction", "lat": 12.9680, "lon": 77.6800, "kind": "pickup"},
+          {"name": "Pickup 2: Lake View", "lat": 12.9750, "lon": 77.6400, "kind": "pickup"},
+          {"name": "Pickup 3: Metro Station", "lat": 12.9730, "lon": 77.6200, "kind": "pickup"},
+          {"name": "Office Campus", "lat": 12.9716, "lon": 77.5946, "kind": "drop"}
+        ]
+      }
+    },
+    {
+      "id": "BUS-03",
+      "name": "Employee Bus 3",
+      "driver": "Mahesh Gowda",
+      "route": {
+        "name": "Route C: North to Office",
+        "points": [[13.0500, 77.5800], [13.0400, 77.5830], [13.0300, 77.5870], [13.0200, 77.5900], [13.0100, 77.5930], [12.9900, 77.5940], [12.9716, 77.5946]],
+        "stops": [
+          {"name": "Pickup 1: North Bus Stand", "lat": 13.0400, "lon": 77.5830, "kind": "pickup"},
+          {"name": "Pickup 2: Tech Park Gate", "lat": 13.0200, "lon": 77.5900, "kind": "pickup"},
+          {"name": "Pickup 3: Hospital Road", "lat": 12.9900, "lon": 77.5940, "kind": "pickup"},
+          {"name": "Office Campus", "lat": 12.9716, "lon": 77.5946, "kind": "drop"}
+        ]
+      }
+    }
+  ]
+}

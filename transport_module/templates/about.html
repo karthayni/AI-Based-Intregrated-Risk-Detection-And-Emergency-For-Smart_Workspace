@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block content %}
+<div class="pagehead">
+  <h1>About this system</h1>
+  <p>AI-Based Integrated Safety And Risk System For Smart Workspace. It watches the workplace through a camera and tracks the employee buses, then shows both in one place.</p>
+</div>
+
+<section class="three">
+  <div class="panel"><h3>PPE and danger zone</h3><p>A trained YOLOv8 model finds each person and checks for a helmet, vest, boots and gloves. A zone drawn on the camera view marks the area where PPE is mandatory.</p></div>
+  <div class="panel"><h3>Stress estimate</h3><p>A Teachable Machine model reads the facial expression of each person and labels it stressed or normal. Several frames are averaged so the label does not flicker.</p></div>
+  <div class="panel"><h3>Employee transport</h3><p>Each bus sends its GPS position. The system compares it with the planned route and raises an alert for a route deviation, an unexpected stop, a lost signal or a missed stop.</p></div>
+</section>
+
+<section class="sect">
+  <h2>How the data flows</h2>
+  <div class="flow">
+    <div class="step"><b>Camera</b><span>Live video of the workplace</span></div>
+    <div class="step"><b>PPE detection</b><span>YOLOv8 finds people and PPE</span></div>
+    <div class="step"><b>Stress model</b><span>Teachable Machine on each face</span></div>
+    <div class="step"><b>Risk status</b><span>Rules combine all three checks</span></div>
+    <div class="step"><b>Log and snapshot</b><span>events.csv and a picture</span></div>
+    <div class="step"><b>This dashboard</b><span>With the bus tracking</span></div>
+  </div>
+</section>
+
+<section class="sect">
+  <h2>How a person's status is decided</h2>
+  <table class="rules">
+    <tr><th>PPE</th><th>Position and stress</th><th>Status</th></tr>
+    <tr><td>Complete</td><td>Stress not high</td><td><span class="pill SAFE">Safe</span></td></tr>
+    <tr><td>Complete</td><td>Stress high</td><td><span class="pill CAUTION">Caution</span></td></tr>
+    <tr><td>Missing</td><td>Outside the danger zone, stress not high</td><td><span class="pill VIOLATION">PPE violation</span></td></tr>
+    <tr><td>Missing</td><td>Inside the danger zone</td><td><span class="pill HIGH_RISK">High risk</span></td></tr>
+    <tr><td>Missing</td><td>Outside the zone, stress high</td><td><span class="pill HIGH_RISK">High risk</span></td></tr>
+  </table>
+  <p class="prose" style="margin-top:10px;color:var(--muted)">An alert is saved only when a problem lasts for a few frames, and the same alert is not repeated for 10 seconds.</p>
+</section>
+
+<section class="sect">
+  <h2>Built with</h2>
+  <div class="prose"><p>Python, OpenCV, YOLOv8 (Ultralytics), Teachable Machine with TensorFlow Lite, Flask, SQLite and Leaflet for the map.</p></div>
+</section>
+
+<section class="sect">
+  <h2>What to keep in mind</h2>
+  <ul class="prose limits">
+    <li>The stress label comes from facial expression only. It is a risk indicator, not a medical measurement of stress.</li>
+    <li>The stress model was trained on a public expression dataset, so accuracy on a webcam is lower than on its own test pictures.</li>
+    <li>Buses in the demo are simulated unless a phone or GPS device sends real positions.</li>
+  </ul>
+</section>
+
+<section class="sect">
+  <h2>Team</h2>
+  <div class="team">
+    <div>B. Karthayayini<small>Team leader</small></div>
+    <div>G. Vishnu Priya<small>Team member</small></div>
+    <div>Likitha S<small>Team member</small></div>
+    <div>Spoorthi S Tellur<small>Team member</small></div>
+    <div>Indranil Bakshi<small>Mentor</small></div>
+  </div>
+</section>
+{% endblock %}

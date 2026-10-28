@@ -1,0 +1,18 @@
+# EXAMPLE ONLY. If you download a dataset from Roboflow/Kaggle in "YOLOv8" format,
+# use the data.yaml that comes inside the download (it has the correct paths and class names).
+path: datasets/ppe          # folder that contains train/ valid/ test/
+train: train/images
+val: valid/images
+test: test/images
+
+names:
+  0: Hardhat
+  1: Mask
+  2: NO-Hardhat
+  3: NO-Mask
+  4: NO-Safety Vest
+  5: Person
+  6: Safety Cone
+  7: Safety Vest
+  8: machinery
+  9: vehicle

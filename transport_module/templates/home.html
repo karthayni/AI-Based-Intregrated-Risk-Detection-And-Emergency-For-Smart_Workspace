@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="herotext">
+    <h1>One place to see who is at risk, at work and on the road</h1>
+    <p>Smart Workspace Safety checks PPE and stress on camera, follows the employee buses on a map, and raises an alert as soon as something is wrong.</p>
+    <div class="btns">
+      <a class="btn primary" href="/dashboard">Open the dashboard</a>
+      <a class="btn" href="/about">How it works</a>
+    </div>
+    <p class="fine">AI-Based Integrated Safety And Risk System For Smart Workspace</p>
+  </div>
+  <section class="board mini" id="board" aria-live="polite">
+    <div class="stripe"></div>
+    <div class="inner">
+      <div>
+        <div class="boardlabel">Right now</div>
+        <h2 id="bTitle">Loading</h2>
+        <p id="bText">Waiting for data.</p>
+      </div>
+      <dl>
+        <div><dd id="bHour">0</dd><dt>workplace alerts in the last hour</dt></div>
+        <div><dd id="bTrans">0</dd><dt>active transport alerts</dt></div>
+      </dl>
+    </div>
+  </section>
+</section>
+
+<section class="sect">
+  <h2>What it watches</h2>
+  <div class="three">
+    <div class="panel"><h3>PPE and danger zone</h3><p>A YOLOv8 model finds every person and checks for a helmet, vest, boots and gloves. A zone drawn on the camera view marks where PPE is mandatory.</p><a class="more" href="/dashboard/camera">Open the live camera</a></div>
+    <div class="panel"><h3>Stress estimate</h3><p>A Teachable Machine model reads each face and labels it stressed or normal. It runs in the same camera view, so one picture shows both checks.</p><a class="more" href="/dashboard/workplace">See saved alerts</a></div>
+    <div class="panel"><h3>Employee transport</h3><p>Each bus is followed against its planned route and pickup stops. Route deviations, unexpected stops and lost signals raise an alert.</p><a class="more" href="/dashboard/transport">Open the bus map</a></div>
+  </div>
+</section>
+
+<section class="sect">
+  <h2>From camera to alert</h2>
+  <div class="flow">
+    <div class="step"><b>Camera</b><span>Live video of the workplace</span></div>
+    <div class="step"><b>Detection</b><span>People, PPE and faces</span></div>
+    <div class="step"><b>Risk status</b><span>Safe, caution, violation or high risk</span></div>
+    <div class="step"><b>Alert</b><span>Saved with a picture</span></div>
+    <div class="step"><b>Dashboard</b><span>Shown with the bus tracking</span></div>
+  </div>
+</section>
+
+<section class="sect">
+  <h2>Inside the dashboard</h2>
+  <div class="pages">
+    <a href="/dashboard"><b>Overview</b><span>The status board, today's figures and the latest alerts.</span></a>
+    <a href="/dashboard/camera"><b>Live camera</b><span>Start the detection and watch it work.</span></a>
+    <a href="/dashboard/workplace"><b>Workplace alerts</b><span>Every alert with its picture, with filters and a CSV download.</span></a>
+    <a href="/dashboard/transport"><b>Transport</b><span>The live map, stops and bus alerts.</span></a>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}<script src="/static/page-home.js"></script>{% endblock %}

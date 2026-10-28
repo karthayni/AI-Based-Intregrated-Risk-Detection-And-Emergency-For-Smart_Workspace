@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{% endblock %} | Smart Workspace Safety</title>
+<link rel="stylesheet" href="/static/site.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="mark"></span><span>Smart Workspace Safety</span></a>
+    <nav aria-label="Main">
+      <a href="/" {% if section == 'home' %}aria-current="page"{% endif %}>Home</a>
+      <a href="/dashboard" {% if section == 'dashboard' %}aria-current="page"{% endif %}>Dashboard</a>
+      <a href="/about" {% if section == 'about' %}aria-current="page"{% endif %}>About</a>
+    </nav>
+    <div class="live"><i id="dot"></i><span id="liveText">Connecting</span><button type="button" id="fs" class="fsbtn" aria-label="Show the website in full screen">Full screen</button></div>
+  </div>
+</header>
+<div id="banner">Lost connection to the server. Check that <code style="color:#222">python app.py</code> is still running. Retrying.</div>
+<main class="{% block mainclass %}wrap{% endblock %}">
+{% block content %}{% endblock %}
+</main>
+<footer>
+  <div class="wrap">
+    <span>AI-Based Integrated Safety And Risk System For Smart Workspace</span>
+    <span>SAP Edunet capstone, Team 15455</span>
+  </div>
+</footer>
+<div id="lightbox"><img alt="Alert snapshot"></div>
+<script src="/static/site.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

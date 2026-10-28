@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block mainclass %}wrap dashwrap{% endblock %}
+{% block content %}
+<div class="dash">
+  <aside class="side" aria-label="Dashboard sections">
+    <div class="sidetitle">Dashboard</div>
+    <nav>
+      <a href="/dashboard" {% if page == 'overview' %}aria-current="page"{% endif %}>Overview</a>
+      <a href="/dashboard/camera" {% if page == 'camera' %}aria-current="page"{% endif %}>Live camera</a>
+      <a href="/dashboard/workplace" {% if page == 'workplace' %}aria-current="page"{% endif %}>Workplace alerts</a>
+      <a href="/dashboard/transport" {% if page == 'transport' %}aria-current="page"{% endif %}>Transport</a>
+    </nav>
+    <div class="sidenote" id="sideStatus"></div>
+  </aside>
+  <div class="dmain">
+{% block dcontent %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

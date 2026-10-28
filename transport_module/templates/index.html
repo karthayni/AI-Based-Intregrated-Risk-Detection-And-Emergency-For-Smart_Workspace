@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employee Transport Tracking</title>
+<link rel="stylesheet" href="/static/leaflet/leaflet.css">
+<style>
+  :root {
+    --navy:#213163; --gold:#F5B800; --ink:#1e2433; --muted:#5b6578; --line:#d9dee8; --bg:#f3f5f9; --card:#ffffff;
+    --ok:#2e9e5b; --done:#213163; --wait:#8a94a6; --bad:#d64545; --warn:#e09a00;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:Arial, Helvetica, sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:var(--navy); color:#fff; padding:12px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  header h1 { font-size:20px; margin:0; font-weight:700; }
+  header .sub { font-size:12px; color:#cadcfc; margin-top:2px; }
+  header .live { font-size:12px; display:flex; align-items:center; gap:6px; color:#cadcfc; }
+  .dot { width:9px; height:9px; border-radius:50%; background:var(--ok); display:inline-block; }
+  .dot.off { background:var(--bad); }
+  #banner { display:none; background:var(--bad); color:#fff; padding:8px 20px; font-size:14px; }
+
+  .tiles { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; padding:14px 20px 0; }
+  .tile { background:var(--card); border-radius:10px; padding:12px 14px; box-shadow:0 1px 3px rgba(20,30,60,.08); }
+  .tile .n { font-size:26px; font-weight:700; color:var(--navy); }
+  .tile .l { font-size:12px; color:var(--muted); }
+  .tile.alert .n { color:var(--bad); }
+
+  main { display:grid; grid-template-columns:290px 1fr 370px; gap:12px; padding:12px 20px 20px; }
+  .col { display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .panel { background:var(--card); border-radius:10px; box-shadow:0 1px 3px rgba(20,30,60,.08); padding:12px; }
+  .panel h2 { font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:0 0 10px; }
+  #map { height:620px; border-radius:10px; box-shadow:0 1px 3px rgba(20,30,60,.08); background:#dfe5ef; }
+  .mapbar { display:flex; align-items:center; gap:14px; font-size:12px; color:var(--muted); margin:0 2px 8px; flex-wrap:wrap; }
+  .mapbar label { display:flex; align-items:center; gap:5px; cursor:pointer; }
+  .legend span { display:inline-flex; align-items:center; gap:4px; margin-right:10px; }
+  .legend i { width:10px; height:10px; border-radius:50%; display:inline-block; border:1px solid #fff; box-shadow:0 0 0 1px #aab; }
+
+  .vcard { border:1px solid var(--line); border-radius:9px; padding:10px 11px; margin-bottom:8px; cursor:pointer; background:#fff; }
+  .vcard:hover { border-color:#aab4cc; }
+  .vcard.sel { border-color:var(--navy); box-shadow:0 0 0 2px rgba(33,49,99,.15); }
+  .vtop { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .vtop b { font-size:14px; }
+  .vsub { font-size:12px; color:var(--muted); margin:2px 0 6px; }
+  .vmeta { display:flex; flex-wrap:wrap; gap:4px 12px; font-size:12px; color:var(--muted); }
+  .bar { height:5px; background:#e6eaf2; border-radius:3px; margin-top:8px; overflow:hidden; }
+  .bar > div { height:100%; background:var(--ok); }
+  .badge { font-size:11px; font-weight:700; padding:3px 8px; border-radius:20px; color:#fff; white-space:nowrap; }
+  .badge.ok{background:var(--ok)} .badge.done{background:var(--done)} .badge.wait{background:var(--wait)}
+  .badge.bad{background:var(--bad)} .badge.warn{background:var(--warn)}
+
+  .tabs { display:flex; gap:6px; margin-bottom:10px; }
+  .tab { flex:1; border:1px solid var(--line); background:#fff; padding:7px 4px; border-radius:7px; font-size:12px; cursor:pointer; color:var(--muted); font-weight:700; }
+  .tab.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .list { max-height:520px; overflow:auto; }
+  .alert-row { border:1px solid var(--line); border-left:4px solid var(--warn); border-radius:7px; padding:8px 10px; margin-bottom:7px; font-size:13px; cursor:pointer; }
+  .alert-row.high { border-left-color:var(--bad); }
+  .alert-row.resolved { opacity:.6; border-left-color:var(--wait); }
+  .alert-row .t { display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--muted); margin-bottom:3px; }
+  .chip { font-size:10px; font-weight:700; padding:1px 7px; border-radius:10px; color:#fff; background:var(--bad); }
+  .chip.res { background:var(--wait); }
+  .empty { color:var(--muted); font-size:13px; padding:8px 2px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; font-size:11px; color:var(--muted); padding:4px 4px; border-bottom:1px solid var(--line); }
+  td { padding:7px 4px; border-bottom:1px solid #eef1f6; vertical-align:top; }
+  .st { font-weight:700; font-size:12px; }
+  .st.pending{color:var(--wait)} .st.arrived{color:var(--warn)} .st.done{color:var(--ok)} .st.missed{color:var(--bad)}
+  .ppe-row { border-bottom:1px solid #eef1f6; padding:7px 2px; font-size:12px; }
+  .ppe-row b.SAFE{color:var(--ok)} .ppe-row b.CAUTION{color:#2a6fb0} .ppe-row b.VIOLATION{color:var(--warn)} .ppe-row b.HIGH_RISK{color:var(--bad)}
+  .veh-pin { color:#fff; font-size:11px; font-weight:700; text-align:center; border-radius:12px; padding:3px 0; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.4); }
+  .veh-pin.ok{background:var(--ok)} .veh-pin.done{background:var(--done)} .veh-pin.wait{background:var(--wait)}
+  .veh-pin.bad{background:var(--bad)} .veh-pin.warn{background:var(--warn)}
+  code { background:#eef1f6; padding:1px 5px; border-radius:4px; }
+
+  @media (max-width:1180px) { main { grid-template-columns:1fr; } #map { height:460px; } .tiles { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Employee Transport Tracking</h1>
+    <div class="sub">AI-Based Integrated Safety And Risk System For Smart Workspace &middot; Module 3</div>
+  </div>
+  <div class="live"><span class="dot" id="dot"></span><span id="liveText">connecting...</span></div>
+</header>
+<div id="banner">Lost connection to the server. Is <code>python app.py</code> still running? Retrying...</div>
+
+<section class="tiles">
+  <div class="tile"><div class="n" id="tVeh">0</div><div class="l">Vehicles</div></div>
+  <div class="tile"><div class="n" id="tOn">0</div><div class="l">On route</div></div>
+  <div class="tile alert"><div class="n" id="tAlert">0</div><div class="l">Active alerts</div></div>
+  <div class="tile"><div class="n" id="tDone">0</div><div class="l">Trips completed</div></div>
+</section>
+
+<main>
+  <div class="col">
+    <div class="panel"><h2>Vehicles</h2><div id="vehicles"></div></div>
+  </div>
+
+  <div class="col">
+    <div>
+      <div class="mapbar">
+        <div class="legend">
+          <span><i style="background:#8a94a6"></i>pending</span><span><i style="background:#e09a00"></i>at stop</span>
+          <span><i style="background:#2e9e5b"></i>done</span><span><i style="background:#d64545"></i>missed</span>
+        </div>
+        <label><input type="checkbox" id="follow"> Follow selected vehicle</label>
+        <span>Click the map to see coordinates for <code>routes.json</code></span>
+      </div>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab on" data-tab="alerts">Alerts</button>
+        <button class="tab" data-tab="stops">Pickup / Drop</button>
+        <button class="tab" data-tab="ppe">Workplace</button>
+      </div>
+      <div id="tab-alerts" class="list"></div>
+      <div id="tab-stops" class="list" style="display:none"></div>
+      <div id="tab-ppe" class="list" style="display:none"></div>
+    </div>
+  </div>
+</main>
+
+<script src="/static/leaflet/leaflet.js"></script>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CLS = {'ON ROUTE':'ok','COMPLETED':'done','WAITING':'wait','OFF ROUTE':'bad','STOPPED':'warn','NO SIGNAL':'warn'};
+const STOP_COLOR = {pending:'#8a94a6', arrived:'#e09a00', done:'#2e9e5b', missed:'#d64545'};
+const LABEL = {ROUTE_DEVIATION:'Route deviation', UNEXPECTED_STOP:'Unexpected stop', SIGNAL_LOST:'Signal lost', STOP_MISSED:'Stop missed'};
+const fmt = sec => sec ? new Date(sec*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '-';
+
+let selected = null, state = null, firstFit = false, tab = 'alerts';
+const layers = {};                                   // vehicle id -> {route, trail, marker, stops}
+
+const map = L.map('map').setView([12.97, 77.6], 11);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+map.on('click', e => L.popup().setLatLng(e.latlng).setContent('<b>Coordinates</b><br><code>' + e.latlng.lat.toFixed(5) + ', ' + e.latlng.lng.toFixed(5) + '</code>').openOn(map));
+
+function selectVehicle(id, fit) {
+  selected = id;
+  styleLayers();
+  renderVehicles(); renderStops();
+  if (fit && layers[id]) map.fitBounds(layers[id].route.getBounds(), {padding:[30,30]});
+}
+
+function styleLayers() {
+  for (const id in layers) {
+    const on = id === selected;
+    layers[id].route.setStyle({color: on ? '#213163' : '#9aa5bf', weight: on ? 5 : 3, opacity: on ? .85 : .6, dashArray: on ? null : '6 8'});
+    layers[id].trail.setStyle({opacity: on ? 1 : .5});
+  }
+}
+
+function ensureLayers(v) {
+  if (layers[v.id]) return;
+  const route = L.polyline(v.points, {color:'#9aa5bf', weight:3}).addTo(map);
+  const trail = L.polyline([], {color:'#2e9e5b', weight:4}).addTo(map);
+  const stops = v.stops.map((s, i) => L.circleMarker([s.lat, s.lon], {radius:8, color:'#fff', weight:2, fillOpacity:1, fillColor:STOP_COLOR.pending})
+      .bindTooltip(esc(s.name)).addTo(map));
+  layers[v.id] = {route, trail, stops, marker:null};
+}
+
+function updateMap(s) {
+  for (const v of s.vehicles) {
+    ensureLayers(v);
+    const l = layers[v.id];
+    l.trail.setLatLngs(v.trail);
+    v.stops.forEach((st, i) => {
+      l.stops[i].setStyle({fillColor: STOP_COLOR[st.status]});
+      l.stops[i].setTooltipContent(esc(st.name) + ' (' + st.status + ')');
+    });
+    if (v.position) {
+      const icon = L.divIcon({className:'', html:'<div class="veh-pin ' + (CLS[v.status]||'wait') + '">' + esc(v.id) + '</div>', iconSize:[66,24], iconAnchor:[33,12]});
+      if (!l.marker) { l.marker = L.marker(v.position, {icon, zIndexOffset:1000}).addTo(map); l.marker.on('click', () => selectVehicle(v.id, false)); }
+      else { l.marker.setLatLng(v.position); l.marker.setIcon(icon); }
+    }
+    if (v.active_alerts.length) l.trail.setStyle({color:'#d64545'}); else l.trail.setStyle({color:'#2e9e5b'});
+  }
+  if (!firstFit && s.vehicles.length) {
+    const all = L.featureGroup(Object.values(layers).map(l => l.route));
+    map.fitBounds(all.getBounds(), {padding:[30,30]}); firstFit = true;
+  }
+  const sel = s.vehicles.find(v => v.id === selected);
+  if (sel && sel.position && $('#follow').checked) map.panTo(sel.position);
+}
+
+function renderTiles(s) {
+  $('#tVeh').textContent = s.vehicles.length;
+  $('#tOn').textContent = s.vehicles.filter(v => v.status === 'ON ROUTE').length;
+  $('#tAlert').textContent = s.vehicles.reduce((n, v) => n + v.active_alerts.length, 0);
+  $('#tDone').textContent = s.vehicles.filter(v => v.trip === 'completed').length;
+}
+
+function renderVehicles() {
+  if (!state) return;
+  $('#vehicles').innerHTML = state.vehicles.map(v => {
+    const done = v.stops.filter(s => s.status === 'done' || s.status === 'missed').length;
+    const pct = Math.round(100 * done / v.stops.length);
+    return '<div class="vcard ' + (v.id === selected ? 'sel' : '') + '" data-id="' + esc(v.id) + '">' +
+      '<div class="vtop"><b>' + esc(v.name) + '</b><span class="badge ' + (CLS[v.status]||'wait') + '">' + esc(v.status) + '</span></div>' +
+      '<div class="vsub">' + esc(v.id) + (v.driver ? ' &middot; ' + esc(v.driver) : '') + '<br>' + esc(v.route_name) + '</div>' +
+      '<div class="vmeta"><span>' + (v.speed_kmh == null ? '- km/h' : v.speed_kmh + ' km/h') + '</span>' +
+      '<span>' + (v.off_route_m == null ? 'off route: -' : 'off route: ' + v.off_route_m + ' m') + '</span>' +
+      '<span>' + (v.seconds_since_update == null ? 'no data yet' : 'updated ' + v.seconds_since_update + ' s ago') + '</span></div>' +
+      '<div class="bar"><div style="width:' + pct + '%"></div></div></div>';
+  }).join('');
+  document.querySelectorAll('.vcard').forEach(el => el.onclick = () => selectVehicle(el.dataset.id, true));
+}
+
+function renderAlerts() {
+  if (!state) return;
+  const rows = state.alerts;
+  $('#tab-alerts').innerHTML = rows.length ? rows.map(a => {
+    const active = a.resolved == null;
+    return '<div class="alert-row ' + a.severity + (active ? '' : ' resolved') + '" data-id="' + esc(a.vehicle_id) + '" data-lat="' + a.lat + '" data-lon="' + a.lon + '">' +
+      '<div class="t"><span>' + fmt(a.created) + ' &middot; ' + esc(a.vehicle_id) + '</span><span class="chip ' + (active ? '' : 'res') + '">' + (active ? 'ACTIVE' : 'RESOLVED') + '</span></div>' +
+      '<b>' + esc(LABEL[a.type] || a.type) + '</b><br>' + esc(a.message) + '</div>';
+  }).join('') : '<div class="empty">No alerts yet. All vehicles are following their plan.</div>';
+  document.querySelectorAll('.alert-row').forEach(el => el.onclick = () => {
+    selectVehicle(el.dataset.id, false); map.flyTo([+el.dataset.lat, +el.dataset.lon], 16);
+  });
+}
+
+function renderStops() {
+  const v = state && state.vehicles.find(x => x.id === selected);
+  if (!v) { $('#tab-stops').innerHTML = '<div class="empty">Select a vehicle on the left.</div>'; return; }
+  $('#tab-stops').innerHTML = '<div style="font-size:13px;margin-bottom:8px"><b>' + esc(v.name) + '</b> &middot; ' + esc(v.route_name) + '</div>' +
+    '<table><tr><th>#</th><th>Stop</th><th>Status</th><th>Time</th></tr>' + v.stops.map((s, i) =>
+      '<tr><td>' + (i+1) + '</td><td>' + esc(s.name) + '<div style="font-size:11px;color:#5b6578">' + esc(s.kind) + '</div></td>' +
+      '<td class="st ' + s.status + '">' + s.status.toUpperCase() + '</td><td>' + fmt(s.arrived_at) + '</td></tr>').join('') + '</table>';
+}
+
+async function loadPpe() {
+  try {
+    const r = await (await fetch('/api/ppe')).json();
+    $('#tab-ppe').innerHTML = !r.available
+      ? '<div class="empty">Module 1/2 log not connected. Start the server with <code>--ppe-log path\\to\\events.csv</code> to show PPE and stress alerts here.</div>'
+      : (r.rows.length ? r.rows.map(x => '<div class="ppe-row"><b class="' + esc(x.status) + '">' + esc(x.status) + '</b> &middot; ' + esc(x.time) + '<br>' + esc(x.details) + '</div>').join('')
+                       : '<div class="empty">No workplace alerts recorded yet.</div>');
+  } catch (e) {}
+}
+
+async function poll() {
+  try {
+    const r = await fetch('/api/state'); state = await r.json();
+    $('#banner').style.display = 'none'; $('#dot').classList.remove('off'); $('#liveText').textContent = 'live';
+    if (!selected && state.vehicles.length) selected = state.vehicles[0].id;
+    updateMap(state); styleLayers(); renderTiles(state); renderVehicles(); renderAlerts(); renderStops();
+  } catch (e) {
+    $('#banner').style.display = 'block'; $('#dot').classList.add('off'); $('#liveText').textContent = 'offline';
+  }
+}
+
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
+  tab = b.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
+  for (const t of ['alerts', 'stops', 'ppe']) $('#tab-' + t).style.display = (t === tab) ? '' : 'none';
+  if (tab === 'ppe') loadPpe();
+});
+
+poll(); setInterval(poll, 2000); setInterval(() => { if (tab === 'ppe') loadPpe(); }, 5000);
+</script>
+</body>
+</html>

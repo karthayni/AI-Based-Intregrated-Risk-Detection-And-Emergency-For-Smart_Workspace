@@ -1,0 +1,59 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Overview{% endblock %}
+{% block dcontent %}
+<section class="board" id="board" aria-live="polite">
+  <div class="stripe"></div>
+  <div class="inner">
+    <div>
+      <h1 id="bTitle">Loading</h1>
+      <p id="bText">Waiting for data from the camera log and the buses.</p>
+    </div>
+    <dl>
+      <div><dd id="bHour">0</dd><dt>workplace alerts in the last hour</dt></div>
+      <div><dd id="bTrans">0</dd><dt>active transport alerts</dt></div>
+      <div><dd id="bBus">0</dd><dt>on route now</dt></div>
+    </dl>
+  </div>
+</section>
+
+<section class="panel figures" aria-label="Today at a glance">
+  <section>
+    <h2>Workplace today</h2>
+    <div class="figrow">
+      <div class="fig high"><b id="fHigh">0</b><span>High risk</span></div>
+      <div class="fig viol"><b id="fViol">0</b><span>PPE violations</span></div>
+      <div class="fig caut"><b id="fCaut">0</b><span>Caution</span></div>
+      <div class="fig"><b id="fStress">0</b><span>Stress high</span></div>
+    </div>
+  </section>
+  <section>
+    <h2>Transport now</h2>
+    <div class="figrow">
+      <div class="fig"><b id="fOn">0</b><span>On route</span></div>
+      <div class="fig"><b id="fDone">0</b><span>Trips done</span></div>
+      <div class="fig high"><b id="fAlert">0</b><span>Active alerts</span></div>
+    </div>
+  </section>
+</section>
+
+<div class="grid2">
+  <section class="panel">
+    <h2>Latest alerts</h2>
+    <div id="alerts"></div>
+    <a class="more" href="/dashboard/workplace">See all workplace alerts</a>
+  </section>
+  <div class="stack">
+    <section class="panel">
+      <h2>Alerts per hour</h2>
+      <p class="sub">Workplace alerts in the last 12 hours</p>
+      <div id="chart"></div>
+    </section>
+    <section class="panel">
+      <h2>Buses</h2>
+      <div id="fleet"></div>
+      <a class="more" href="/dashboard/transport">Open the live map</a>
+    </section>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="/static/page-overview.js"></script>{% endblock %}
