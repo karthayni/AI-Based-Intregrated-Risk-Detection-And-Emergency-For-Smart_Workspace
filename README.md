@@ -1,6 +1,6 @@
 # AI-Based Integrated Safety And Risk System For Smart Workspace
 
-SAP Edunet capstone project, Team ID 15455.
+
 Team: B. Karthayayini (team leader), G. Vishnu Priya, Likitha S, Spoorthi S Tellur. Mentor: Indranil Bakshi.
 
 One system that watches a workplace through a camera, follows employee buses on a map, and shows every alert in one website.
